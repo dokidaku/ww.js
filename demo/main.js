@@ -2,49 +2,41 @@
 // http://www.patrick-wied.at/blog/how-to-create-audio-visualizations-with-javascript-html
 
 window.onload = function() {
-    // Connect to the microphone
-    var errorCallback = function (err) {
-        alert('Something went wrong while connecting to the microphone QAQ\n' + err.message);
-        console.log(arguments);
+    // Create the bars
+    var freqBars = {};
+    var timeBars = {};
+    var i;
+
+    refreshDisp = function () {
+        window.requestAnimationFrame(refreshDisp);
+        ww.getFrequencyData();
+        ww.getTimeDomainData();
+        for (i = 0; i < ww.bufSize; ++i) {
+            timeBars[i].style.height = (100.0 / 255.0 * ww.timeData[i]) + '%';
+        }
+        for (i = 0; i < ww.freqBinCount; ++i) {
+            freqBars[i].style.height = (100.0 / 255.0 * ww.freqData[i]) + '%';
+        }
     };
-    navigator.getUserMedia = navigator.getUserMedia ||
-        navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia || navigator.msGetUserMedia;
-    if (navigator.getUserMedia) {
-        navigator.getUserMedia({audio: true}, function (stream) {
-            // Get ready for the data
-            window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
-            var audctx = new window.AudioContext();
-            var melsrc = audctx.createMediaStreamSource(stream);
-            window.melsrc = melsrc; // Firefox bug workaround, see http://stackoverflow.com/q/22860468
-            var analys = audctx.createAnalyser();
-            melsrc.connect(analys);
-            //analys.connect(audctx.destination);     // Uncomment for playback
-            analys.fftSize = 1024;
-            var auddata = new Uint8Array(analys.frequencyBinCount);
 
-            // Create the bars
-            var bars = {};
-            var i;
-            for (i = 0; i < analys.frequencyBinCount; ++i) {
-                bars[i] = document.createElement('div');
-                bars[i].classList.add('bar');
-                bars[i].style.left = (i / analys.frequencyBinCount * 100.0).toString() + '%';
-                bars[i].style.width = (100.0 / analys.frequencyBinCount).toString() + '%';
-                document.body.appendChild(bars[i]);
-            }
-
-            refreshDisp = function () {
-                window.requestAnimationFrame(refreshDisp);
-                analys.getByteFrequencyData(auddata);
-                for (i = 0; i < analys.frequencyBinCount; ++i) {
-                    bars[i].style.height = (100.0 / 255.0 * auddata[i]) + '%';
-                }
-            };
-
-            refreshDisp();
-        }, errorCallback);
-    } else {
-        errorCallback({message: 'Seems like your browser doesn\'t support that...'});
-    }
+    // Initialize ww.js
+    ww.bufSize = 256;
+    ww.fftSize = 256;
+    ww.init(function() {
+        for (i = 0; i < ww.bufSize; ++i) {
+            timeBars[i] = document.createElement('div');
+            timeBars[i].classList.add('time-bar');
+            timeBars[i].style.left = (i / ww.bufSize * 100.0).toString() + '%';
+            timeBars[i].style.width = (100.0 / ww.bufSize).toString() + '%';
+            document.body.appendChild(timeBars[i]);
+        }
+        for (i = 0; i < ww.freqBinCount; ++i) {
+            freqBars[i] = document.createElement('div');
+            freqBars[i].classList.add('freq-bar');
+            freqBars[i].style.left = (i / ww.freqBinCount * 100.0).toString() + '%';
+            freqBars[i].style.width = (100.0 / ww.freqBinCount).toString() + '%';
+            document.body.appendChild(freqBars[i]);
+        }
+        refreshDisp();
+    });
 };

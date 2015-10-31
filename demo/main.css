@@ -1,4 +1,12 @@
-.bar {
+.time-bar {
+    position: absolute;
+    bottom: 0px;
+    height: 0%;
+    border-top: 3px solid #f88;
+    background: #ccc;
+}
+
+.freq-bar {
     position: absolute;
     bottom: 0px;
     height: 0%;
