@@ -1,0 +1,7 @@
+.bar {
+    position: absolute;
+    bottom: 0px;
+    height: 0%;
+    border-top: 3px solid #8f8;
+    background: #000;
+}
