@@ -4,31 +4,31 @@
 window.onload = function() {
     // Create the bars
     var freqBars = {};
-    var timeBars = {};
+    var smplBars = {};
     var i;
 
     refreshDisp = function () {
         window.requestAnimationFrame(refreshDisp);
-        ww.getFrequencyData();
-        ww.getTimeDomainData();
-        for (i = 0; i < ww.bufSize; ++i) {
-            timeBars[i].style.height = (100.0 / 255.0 * ww.timeData[i]) + '%';
+        ww.getFrequencies();
+        ww.getSamples();
+        for (i = 0; i < ww.sampleBufSize; ++i) {
+            smplBars[i].style.height = (100.0 / 255.0 * ww.samples[i]) + '%';
         }
         for (i = 0; i < ww.freqBinCount; ++i) {
-            freqBars[i].style.height = (100.0 / 255.0 * ww.freqData[i]) + '%';
+            freqBars[i].style.height = (100.0 / 255.0 * ww.freq[i]) + '%';
         }
     };
 
     // Initialize ww.js
-    ww.bufSize = 256;
+    ww.sampleBufSize = 256;
     ww.fftSize = 256;
     ww.init(function() {
-        for (i = 0; i < ww.bufSize; ++i) {
-            timeBars[i] = document.createElement('div');
-            timeBars[i].classList.add('time-bar');
-            timeBars[i].style.left = (i / ww.bufSize * 100.0).toString() + '%';
-            timeBars[i].style.width = (100.0 / ww.bufSize).toString() + '%';
-            document.body.appendChild(timeBars[i]);
+        for (i = 0; i < ww.sampleBufSize; ++i) {
+            smplBars[i] = document.createElement('div');
+            smplBars[i].classList.add('time-bar');
+            smplBars[i].style.left = (i / ww.sampleBufSize * 100.0).toString() + '%';
+            smplBars[i].style.width = (100.0 / ww.sampleBufSize).toString() + '%';
+            document.body.appendChild(smplBars[i]);
         }
         for (i = 0; i < ww.freqBinCount; ++i) {
             freqBars[i] = document.createElement('div');

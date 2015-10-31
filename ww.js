@@ -1,6 +1,6 @@
 (function (window) {
     var ww = {};
-    ww.bufSize = 1024;
+    ww.sampleBufSize = 1024;
     ww.fftSize = 1024;
     ww.freqBinCount = undefined;
     ww.initialized = false;
@@ -34,27 +34,27 @@
                 //analys.connect(audctx.destination);
                 ww.analys.fftSize = ww.fftSize;
                 ww.freqBinCount = ww.analys.frequencyBinCount;
-                ww.timeData = new Uint8Array(ww.bufSize);
-                ww.freqData = new Uint8Array(ww.analys.frequencyBinCount);
+                ww.samples = new Uint8Array(ww.sampleBufSize);
+                ww.freq = new Uint8Array(ww.analys.frequencyBinCount);
                 callback();
             }, errorCallback);
         } else {
             errorCallback({message: 'Seems like your browser doesn\'t support that...'});
         }
     };
-    ww.getFrequencyData = function () {
+    ww.getFrequencies = function () {
         if (!ww.initialized) {
             console.log('ww.js not initialized; Call ww.init() first');
             return;
         }
-        ww.analys.getByteFrequencyData(ww.freqData);
+        ww.analys.getByteFrequencyData(ww.freq);
     };
-    ww.getTimeDomainData = function () {
+    ww.getSamples = function () {
         if (!ww.initialized) {
             console.log('ww.js not initialized; Call ww.init() first');
             return;
         }
-        ww.analys.getByteTimeDomainData(ww.timeData);
+        ww.analys.getByteTimeDomainData(ww.samples);
     };
     window.ww = ww;
 }(window));
